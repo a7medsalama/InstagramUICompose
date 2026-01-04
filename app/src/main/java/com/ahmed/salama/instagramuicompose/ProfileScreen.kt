@@ -3,6 +3,7 @@ package com.ahmed.salama.instagramuicompose
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -50,12 +51,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(
+    onPostClick: (Int, String) -> Unit
+) {
     var selectedTabIndex by remember {
         mutableStateOf(0)
     }
+    val accountName = "ahmed.salama_official"
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -65,7 +70,7 @@ fun ProfileScreen() {
     ) {
         Spacer(modifier = Modifier.height(28.dp))
         TopBar(
-            accountName = "ahmed.salama_official",
+            accountName = accountName,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp)
@@ -150,14 +155,16 @@ fun ProfileScreen() {
         Spacer(modifier = Modifier.height(6.dp))
         if (selectedTabIndex == 0) {
             PostSection(
+                accountName = "ahmed.salama_official",
                 posts = listOf(
-                    painterResource(id = R.drawable.samurai_1),
-                    painterResource(id = R.drawable.samurai_2),
-                    painterResource(id = R.drawable.samurai_3),
-                    painterResource(id = R.drawable.samurai_6),
-                    painterResource(id = R.drawable.samurai_5),
-                    painterResource(id = R.drawable.samurai_6),
-                )
+                    R.drawable.samurai_1,
+                    R.drawable.samurai_2,
+                    R.drawable.samurai_3,
+                    R.drawable.samurai_6,
+                    R.drawable.samurai_5,
+                    R.drawable.samurai_6,
+                ),
+                onPostClick = onPostClick
             )
         }
     }
@@ -467,10 +474,9 @@ fun PostTabView(
                 Modifier
                     .tabIndicatorOffset(tabPositions[selectedIndex])
                     .height(3.dp),
-                color = activeColor // underline color
+                color = activeColor
             )
-        },
-        divider = { } // remove the gray divider line
+        }
     ) {
         imageWithTexts.forEachIndexed { index, item ->
             Tab(
@@ -495,15 +501,16 @@ fun PostTabView(
 
 
 @Composable
-fun PostSection(modifier: Modifier = Modifier, posts: List<Painter>) {
+fun PostSection(modifier: Modifier = Modifier, accountName: String, onPostClick: (Int, String) -> Unit, posts: List<Int>) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(3),
         modifier = modifier
             .scale(1.01f)
     ) {
         items(posts.size) {
+            val drawableId = posts[it]
             Image(
-                painter = posts[it],
+                painter = painterResource(id = drawableId),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -512,6 +519,9 @@ fun PostSection(modifier: Modifier = Modifier, posts: List<Painter>) {
                         width = 1.dp,
                         color = Color.White
                     )
+                    .clickable(onClick = {
+                        onPostClick(drawableId, accountName)
+                    })
             )
         }
     }
