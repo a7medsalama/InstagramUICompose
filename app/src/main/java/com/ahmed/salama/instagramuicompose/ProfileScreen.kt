@@ -1,5 +1,6 @@
 package com.ahmed.salama.instagramuicompose
 
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -43,20 +44,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 
 @Composable
 fun ProfileScreen(
-    onPostClick: (Int, String) -> Unit
+    navController: NavHostController
 ) {
+    val activity = LocalActivity.current as MainActivity
     var selectedTabIndex by remember {
         mutableStateOf(0)
     }
@@ -71,6 +73,9 @@ fun ProfileScreen(
         Spacer(modifier = Modifier.height(28.dp))
         TopBar(
             accountName = accountName,
+            onBackClick = {
+                activity.finish()
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp)
@@ -155,7 +160,7 @@ fun ProfileScreen(
         Spacer(modifier = Modifier.height(6.dp))
         if (selectedTabIndex == 0) {
             PostSection(
-                accountName = "ahmed.salama_official",
+                accountName = accountName,
                 posts = listOf(
                     R.drawable.samurai_1,
                     R.drawable.samurai_2,
@@ -164,7 +169,13 @@ fun ProfileScreen(
                     R.drawable.samurai_5,
                     R.drawable.samurai_6,
                 ),
-                onPostClick = onPostClick
+                onPostClick = { drawableId, accountName ->
+                    navController.navigate(Screen.ReelScreen.withArgs(
+                            drawableId.toString(),
+                            accountName
+                        )
+                    )
+                }
             )
         }
     }
@@ -174,7 +185,7 @@ fun ProfileScreen(
 //-----------------------------------------------
 
 @Composable
-fun TopBar(accountName: String,modifier: Modifier = Modifier) {
+fun TopBar(accountName: String,onBackClick: () -> Unit ,modifier: Modifier = Modifier) {
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
@@ -185,6 +196,9 @@ fun TopBar(accountName: String,modifier: Modifier = Modifier) {
             contentDescription = "image",
             tint = Color.Black,
             modifier = Modifier.size(24.dp)
+                .clickable(
+                    onClick = onBackClick
+                )
         )
         Text(
             text = accountName,

@@ -10,12 +10,15 @@ import androidx.navigation.navArgument
 @Composable
 fun Navigation() {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = Screen.ProfileScreen.route) {
+    NavHost(navController = navController, startDestination = Screen.SplashScreen.route) {
+        composable(route = Screen.SplashScreen.route) {
+            SplashScreen(
+                navController = navController
+            )
+        }
         composable(route = Screen.ProfileScreen.route) {
             ProfileScreen(
-                onPostClick = { imageUrl, accountName ->
-                    navController.navigate(Screen.ReelScreen.withArgs(imageUrl.toString(), accountName))
-                }
+                navController = navController
             )
         }
         composable(
